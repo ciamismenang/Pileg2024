@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suara Partai Ciamis 2024</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script src="geo.js"></script>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1d2533;--mute:#6b7585;--line:#e3e7ee;--pks:#F08A1C;--pks-soft:#fff3e4;--pks-0:#fdf1e2;--acc:#1F3864;--chip:#eef1f6;--sea:#eef2f6;--land:#d9dee6;--seatbg:#f7f8fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151c;--card:#1a2029;--ink:#e8ecf2;--mute:#9aa4b2;--line:#2b3340;--pks-soft:#3a2a14;--pks-0:#3a2a14;--acc:#8fb0e8;--chip:#252d39;--sea:#141a22;--land:#2c3440;--seatbg:#222a35}}
+:root[data-theme="dark"]{--bg:#11151c;--card:#1a2029;--ink:#e8ecf2;--mute:#9aa4b2;--line:#2b3340;--pks-soft:#3a2a14;--pks-0:#3a2a14;--acc:#8fb0e8;--chip:#252d39;--sea:#141a22;--land:#2c3440;--seatbg:#222a35}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 16px;position:sticky;top:0;z-index:5}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:18px;margin:0 0 6px}
+.crumb{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:14px}
+.crumb a{color:var(--acc);text-decoration:none;cursor:pointer}
+.crumb a:hover{text-decoration:underline}
+.crumb .sep{color:var(--mute)}
+.crumb .cur{font-weight:600}
+main{padding:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .l{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.kpi .v{font-size:24px;font-weight:700;margin-top:2px}
+.kpi.pks{background:var(--pks-soft);border-color:var(--pks)}
+.grid{display:grid;grid-template-columns:5fr 7fr;gap:14px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:15px;margin:0 0 4px}
+.card .sub{font-size:12px;color:var(--mute);margin-bottom:10px}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--ink);padding:5px 10px;font-size:13px;cursor:pointer}
+.seg button.on{background:var(--acc);color:#fff}
+.chartbox{position:relative;width:100%}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:12px;color:var(--mute);font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--card)}
+th:first-child,td:first-child{text-align:left}
+td.top5{text-align:left;white-space:normal}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--chip)}
+td.pksv{font-weight:700;color:var(--pks)}
+.chip{display:inline-block;padding:2px 7px;margin:2px 3px 2px 0;border-radius:12px;background:var(--chip);font-size:12px}
+.chip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.chip.pks{background:var(--pks);color:#fff;font-weight:600}
+.badge{font-size:11px;padding:1px 6px;border-radius:8px;border:1px solid var(--line);color:var(--mute)}
+.badge.Tinggi{border-color:#2e8b57;color:#2e8b57}.badge.Sedang{border-color:#c08a00;color:#c08a00}.badge.Rendah{border-color:#c0392b;color:#c0392b}
+.tablewrap{overflow-x:auto;max-height:620px;overflow-y:auto}
+.note{font-size:12px;color:var(--mute);margin-top:10px}
+.warn{background:var(--pks-soft);border:1px solid var(--pks);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:12px}
+input[type=search]{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:14px;min-width:180px}
+footer{padding:16px;font-size:12px;color:var(--mute)}
+.mapcard{margin-bottom:14px}
+.mapwrap{position:relative;width:100%;height:480px;background:var(--sea);border-radius:8px;overflow:hidden}
+#map{width:100%;height:100%;display:block}
+#map .bg path{fill:var(--land);stroke:var(--card);stroke-width:1;vector-effect:non-scaling-stroke}
+#map .fg path{stroke:#fff;stroke-width:1.2;vector-effect:non-scaling-stroke;cursor:pointer;transition:opacity .15s}
+#map .fg path.dim{opacity:.35}
+#map .fg path.seatp{stroke:var(--mute);stroke-width:1.5}
+.seatstrip{display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:-2px 0 10px;font-size:13px}.seatstrip .st{font-weight:600;margin-right:6px}.seatstrip .st2{color:var(--mute);margin-left:6px}
+#map .fg path.cur{stroke:#111;stroke-width:3}
+#map .fg path.hl,#map .fg path:hover{stroke:#111;stroke-width:2.5}
+#map text{font-weight:600;fill:#fff;stroke:rgba(0,0,0,.65);paint-order:stroke;stroke-linejoin:round;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.tip{position:absolute;pointer-events:none;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:260px;z-index:3}
+.tip b{display:block;margin-bottom:3px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:10px;font-size:13px;align-items:center}
+.legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.grad{display:inline-block;width:160px;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--pks-0),var(--pks));vertical-align:middle;margin:0 6px}
+@media (max-width:860px){.mapwrap{height:360px}}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.kpi .v{font-size:20px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Suara Partai — Pemilu DPRD Kabupaten Ciamis 2024</h1>
+  <div class="crumb" id="crumb"></div>
+</div></header>
+<main class="wrap">
+  <div id="rwwarn" class="warn" hidden>Angka per RW adalah <b>perkiraan</b>: suara tiap TPS dibagi ke RW sebanding jumlah DPT RW di TPS tersebut. Jumlah semua RW = angka resmi desa. Label keandalan: <b>Tinggi</b> = TPS-nya hampir hanya berisi warga RW itu; <b>Rendah</b> = RW berbagi TPS dengan RW lain sehingga angkanya mirip RW tetangga.</div>
+  <section class="kpis">
+    <div class="kpi"><div class="l">Suara sah partai</div><div class="v" id="k_tot">–</div></div>
+    <div class="kpi pks"><div class="l">Suara PKS</div><div class="v" id="k_pks">–</div></div>
+    <div class="kpi pks"><div class="l">Persentase PKS</div><div class="v" id="k_pct">–</div></div>
+    <div class="kpi pks"><div class="l">Peringkat PKS</div><div class="v" id="k_rank">–</div></div>
+    <div class="kpi pks" id="kk_seat"><div class="l">Kursi PKS</div><div class="v" id="k_seat">–</div></div>
+  </section>
+  <section class="card mapcard" id="mapcard">
+    <div class="tools" style="justify-content:space-between">
+      <h2 id="t_map" style="margin:0">Peta</h2>
+      <div class="seg" id="seg_map"><button data-mm="seat" class="on">Perolehan kursi</button><button data-mm="win">Partai pemenang</button><button data-mm="pks">Kekuatan PKS</button></div>
+    </div>
+    <div class="sub" id="s_map"></div>
+    <div class="seatstrip" id="seatstrip" hidden></div>
+    <div class="mapwrap" id="mapwrap"><svg id="map" preserveAspectRatio="xMidYMid meet"><g class="bg"></g><g class="fg"></g><g class="lb"></g></svg><div id="tip" class="tip" hidden></div></div>
+    <div class="legend" id="legend"></div>
+  </section>
+  <section class="grid">
+    <div class="card">
+      <h2 id="t_top">5 Partai Teratas</h2>
+      <div class="sub" id="s_top"></div>
+      <div class="chartbox" style="height:300px"><canvas id="c_top"></canvas></div>
+    </div>
+    <div class="card">
+      <h2 id="t_child">Suara PKS per wilayah</h2>
+      <div class="tools">
+        <div class="seg" id="seg_mode"><button data-m="v" class="on">Jumlah suara</button><button data-m="p">% suara</button></div>
+        <div class="seg" id="seg_sort"><button data-s="val" class="on">Urut terbesar</button><button data-s="name">Urut nama</button></div>
+      </div>
+      <div class="chartbox" id="cb_child" style="height:300px"><canvas id="c_child"></canvas></div>
+      <div class="note" id="n_child">Klik batang untuk masuk ke wilayah tersebut.</div>
+    </div>
+  </section>
+  <section class="card">
+    <div class="tools" style="justify-content:space-between">
+      <h2 id="t_table" style="margin:0">Rincian</h2>
+      <input type="search" id="q" placeholder="Cari nama…">
+    </div>
+    <div class="tablewrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+    <div class="note" id="n_table"></div>
+  </section>
+</main>
+<footer class="wrap" id="foot"></footer>
+<script>
+const D = window.PILEG_DATA, PT = D.parties, PKS = PT.findIndex(p => p.s === "PKS");
+const CHILD = {Kabupaten:"Dapil", Dapil:"Kecamatan", Kecamatan:"Desa", Desa:"RW"};
+const fmt = n => n.toLocaleString("id-ID"), pct = x => (x*100).toLocaleString("id-ID",{minimumFractionDigits:1,maximumFractionDigits:1})+"%";
+let path = [], mode = "v", sortBy = "val", q = "", tsort = {k:"pks", d:-1}, chTop, chChild;
+const sum = v => v.reduce((a,b)=>a+b,0);
+const order = v => v.map((x,i)=>[i,x]).sort((a,b)=>b[1]-a[1]||a[0]-b[0]);
+const rankOf = (v,i) => 1 + v.filter(x => x > v[i]).length;
+function node(){ let n = D.tree; for (const i of path) n = n.c[i]; return n; }
+function readHash(){ const h = location.hash.replace(/^#\/?/,""); path = h ? h.split("/").map(Number).filter(x=>!isNaN(x)) : [];
+  let n = D.tree; const ok=[]; for (const i of path){ if(!n.c||!n.c[i]) break; n=n.c[i]; ok.push(i);} path=ok; }
+function go(p){ location.hash = "#/" + p.join("/"); }
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+function render(){
+  const n = node(), tot = sum(n.v), ct = CHILD[n.t];
+  // breadcrumb
+  let h = "", cur = D.tree, acc = [];
+  h += path.length ? `<a data-p="">${D.tree.n}</a>` : `<span class="cur">${D.tree.n}</span>`;
+  path.forEach((i,k) => { cur = cur.c[i]; acc.push(i); const last = k===path.length-1;
+    h += `<span class="sep">›</span>` + (last ? `<span class="cur">${cur.n}</span>` : `<a data-p="${acc.join("/")}">${cur.n}</a>`); });
+  const cr = document.getElementById("crumb"); cr.innerHTML = h;
+  cr.querySelectorAll("a").forEach(a => a.onclick = () => go(a.dataset.p ? a.dataset.p.split("/").map(Number) : []));
+  // KPI
+  document.getElementById("k_tot").textContent = fmt(tot);
+  document.getElementById("k_pks").textContent = fmt(n.v[PKS]);
+  document.getElementById("k_pct").textContent = tot ? pct(n.v[PKS]/tot) : "–";
+  { const ks = document.getElementById("kk_seat");
+    if (!path.length){ ks.hidden=false; let s=0; D.tree.c.forEach(dp=>s+=seatInfo(dp).s[PKS]); document.getElementById("k_seat").textContent = `${s} dari 50`; }
+    else { ks.hidden=false; const dp=D.tree.c[path[0]]; document.getElementById("k_seat").textContent = `${seatInfo(dp).s[PKS]} dari ${dp.s}` + (path.length>1?" (dapil)":""); } }
+  document.getElementById("k_rank").textContent = tot ? `${rankOf(n.v,PKS)} dari ${n.v.filter(x=>x>0).length}` : "–";
+  document.getElementById("rwwarn").hidden = n.t !== "Desa" && n.t !== "RW";
+  renderTop(n, tot);
+  renderMap(n);
+  renderChild(n);
+  renderTable(n);
+  document.getElementById("foot").innerHTML = `Sumber: ${D.meta.sumber}. Total suara sah partai se-kabupaten: ${fmt(D.meta.total)}.`;
+}
+function topList(v){ const o = order(v).slice(0,5).map(x=>x[0]); if (!o.includes(PKS)) o.push(PKS); return o; }
+function renderTop(n, tot){
+  const ids = topList(n.v), r = rankOf(n.v,PKS);
+  document.getElementById("t_top").textContent = `5 Partai Teratas — ${n.n}`;
+  document.getElementById("s_top").textContent = r <= 5 ? `PKS berada di peringkat ${r}.` : `PKS di luar 5 besar (peringkat ${r}), ditampilkan sebagai pembanding.`;
+  const labels = ids.map(i => (r>5 && i===PKS ? `#${r} ` : `#${rankOf(n.v,i)} `) + PT[i].s);
+  const vals = ids.map(i => mode==="v" ? n.v[i] : (tot? n.v[i]/tot*100 : 0));
+  const cfg = {type:"bar", data:{labels, datasets:[{data:vals, backgroundColor:ids.map(i=>PT[i].c), borderColor:ids.map(i=>i===PKS?"#000":PT[i].c), borderWidth:ids.map(i=>i===PKS?2:0), borderRadius:4}]},
+    options:{indexAxis:"y", maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>{const i=ids[c.dataIndex]; return `${PT[i].f}: ${fmt(n.v[i])} suara (${pct(tot?n.v[i]/tot:0)})`;}}}},
+      scales:{x:{ticks:{color:css("--mute"), callback:v=> mode==="v"? fmt(v): v+"%"}, grid:{color:css("--line")}}, y:{ticks:{color:css("--ink"), font:{weight:"600"}}, grid:{display:false}}}}};
+  if (chTop) chTop.destroy(); chTop = new Chart(document.getElementById("c_top"), cfg);
+}
+function kids(n){ return (n.c||[]).map((c,i)=>{ const t=sum(c.v); return {i, c, t, pks:c.v[PKS], p: t? c.v[PKS]/t : 0, r: t? rankOf(c.v,PKS):0}; }); }
+function renderChild(n){
+  const ct = CHILD[n.t]; const box = document.getElementById("cb_child");
+  if (!ct){ box.parentElement.style.display="none"; return; } box.parentElement.style.display="";
+  document.getElementById("t_child").textContent = `Suara PKS per ${ct} — ${n.n}`;
+  let k = kids(n); k.sort(sortBy==="name" ? (a,b)=>a.c.n.localeCompare(b.c.n,"id",{numeric:true}) : (mode==="v"? (a,b)=>b.pks-a.pks : (a,b)=>b.p-a.p));
+  const many = k.length > 14; box.style.height = (many ? Math.max(300, k.length*22) : 300) + "px";
+  const vals = k.map(x => mode==="v" ? x.pks : x.p*100);
+  const cfg = {type:"bar", data:{labels:k.map(x=>x.c.n), datasets:[{data:vals, backgroundColor:css("--pks"), borderRadius:3}]},
+    options:{indexAxis: many ? "y":"x", maintainAspectRatio:false, onClick:(e,els)=>{ if(els.length && n.t!=="Desa") go(path.concat(k[els[0].index].i)); },
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>{const x=k[c.dataIndex]; return `PKS ${fmt(x.pks)} suara · ${pct(x.p)} · peringkat ${x.r} (dari ${fmt(x.t)} suara sah)`;}}}},
+      scales:{[many?"x":"y"]:{ticks:{color:css("--mute"), callback:v=> mode==="v"? fmt(v): v+"%"}, grid:{color:css("--line")}}, [many?"y":"x"]:{ticks:{color:css("--ink"), autoSkip:false, maxRotation: many?0:45}, grid:{display:false}}}}};
+  if (chChild) chChild.destroy(); chChild = new Chart(document.getElementById("c_child"), cfg);
+  document.getElementById("n_child").textContent = n.t==="Desa" ? "Angka per RW = perkiraan (lihat keterangan di atas)." : `Klik batang untuk masuk ke ${ct.toLowerCase()} tersebut.`;
+}
+function renderTable(n){
+  const ct = CHILD[n.t], tb = document.getElementById("tbl");
+  if (!ct){ document.getElementById("t_table").textContent = `Rincian partai — ${n.n}`;
+    const t = sum(n.v); tb.tHead.innerHTML = "<tr><th>Partai</th><th>Suara</th><th>%</th><th>Peringkat</th></tr>";
+    tb.tBodies[0].innerHTML = order(n.v).map(([i,v],k)=>`<tr${i===PKS?' style="background:var(--pks-soft)"':''}><td><span class="chip"><i style="background:${PT[i].c}"></i>${PT[i].f}</span></td><td>${fmt(v)}</td><td>${pct(t?v/t:0)}</td><td>${k+1}</td></tr>`).join("");
+    document.getElementById("n_table").textContent = n.k ? `Keandalan angka RW ini: ${n.k}. DPT: ${fmt(n.d)}.` : ""; return; }
+  document.getElementById("t_table").textContent = `Rincian per ${ct} — ${n.n}`;
+  const cols = [["nama",ct],["t","Suara sah"],["pks","Suara PKS"],["p","% PKS"],["r","Peringkat PKS"]];
+  const isRW = ct==="RW";
+  tb.tHead.innerHTML = "<tr>" + cols.map(([k,l])=>`<th data-k="${k}">${l}${tsort.k===k?(tsort.d<0?" ▼":" ▲"):""}</th>`).join("") + (isRW?'<th data-k="kd">Keandalan</th>':"") + "<th style='text-align:left'>5 partai teratas</th></tr>";
+  tb.tHead.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => { const k=th.dataset.k; tsort = {k, d: tsort.k===k ? -tsort.d : (k==="nama"||k==="r"||k==="kd"?1:-1)}; renderTable(n); });
+  let k = kids(n).filter(x => !q || x.c.n.toLowerCase().includes(q));
+  const key = {nama:x=>x.c.n, t:x=>x.t, pks:x=>x.pks, p:x=>x.p, r:x=>x.r, kd:x=>({Tinggi:1,Sedang:2,Rendah:3}[x.c.k]||4)}[tsort.k];
+  k.sort((a,b)=>{ const A=key(a),B=key(b); return (typeof A==="string"? A.localeCompare(B,"id",{numeric:true}) : A-B) * tsort.d; });
+  tb.tBodies[0].innerHTML = k.map(x => { const top = order(x.c.v).slice(0,5);
+    const chips = top.map(([i,v])=>`<span class="chip${i===PKS?" pks":""}"><i style="background:${PT[i].c}"></i>${PT[i].s} ${fmt(v)}</span>`).join("");
+    return `<tr class="click" data-i="${x.i}"><td>${x.c.n}</td><td>${fmt(x.t)}</td><td class="pksv">${fmt(x.pks)}</td><td>${pct(x.p)}</td><td>${x.r||"–"}</td>${isRW?`<td><span class="badge ${x.c.k}">${x.c.k||"–"}</span></td>`:""}<td class="top5">${chips}</td></tr>`; }).join("");
+  tb.tBodies[0].querySelectorAll("tr.click").forEach(tr => { tr.onclick = () => go(path.concat(+tr.dataset.i));
+    tr.onmouseenter = () => hlMap(path.concat(+tr.dataset.i).join("/"), true); tr.onmouseleave = () => hlMap(null); });
+  document.getElementById("n_table").textContent = `Klik baris untuk melihat rincian ${ct.toLowerCase()} tersebut. Klik judul kolom untuk mengurutkan.`;
+}
+document.querySelectorAll("#seg_mode button").forEach(b => b.onclick = () => { mode=b.dataset.m; document.querySelectorAll("#seg_mode button").forEach(x=>x.classList.toggle("on",x===b)); render(); });
+document.querySelectorAll("#seg_sort button").forEach(b => b.onclick = () => { sortBy=b.dataset.s; document.querySelectorAll("#seg_sort button").forEach(x=>x.classList.toggle("on",x===b)); render(); });
+// ---------- KURSI (Sainte-Laguë) ----------
+function seatAlloc(v, S){
+  const q = []; v.forEach((x,i) => { for (let k=0;k<S;k++) q.push([x/(2*k+1), i]); });
+  q.sort((a,b) => b[0]-a[0] || a[1]-b[1]);
+  const s = new Array(v.length).fill(0); q.slice(0,S).forEach(x => s[x[1]]++);
+  return {s, last: q[S-1]};
+}
+function needNext(v, S, s, p){ // suara tambahan partai p agar dapat 1 kursi lagi (partai lain tetap)
+  const k = s[p], oth = [];
+  v.forEach((x,i) => { if (i === p) return; for (let j=0;j<S;j++) oth.push(x/(2*j+1)); });
+  oth.sort((a,b) => b-a);
+  return Math.max(1, Math.floor(oth[S-k-1]*(2*k+1)) - v[p] + 1);
+}
+function seatInfo(dp){ if (!dp.s) return null; if (!dp._seat){ const a = seatAlloc(dp.v, dp.s); a.need = needNext(dp.v, dp.s, a.s, PKS);
+  a.ord = a.s.map((c,i)=>[i,c]).filter(x=>x[1]>0).sort((x,y)=>y[1]-x[1]||dp.v[y[0]]-dp.v[x[0]]); dp._seat = a; } return dp._seat; }
+function seatDots(dp){ const a = seatInfo(dp); return a.ord.flatMap(([i,c]) => Array(c).fill(i)); }
+// ---------- PETA ----------
+const G = window.PILEG_GEO, NS = "http://www.w3.org/2000/svg";
+let mapMode = "seat";
+function nodeAt(p){ let n = D.tree; for (const i of p) n = n.c[i]; return n; }
+function el(tag, attrs){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+function hlMap(key){ document.querySelectorAll("#map .fg path").forEach(p => p.classList.toggle("hl", p.dataset.k === key)); }
+function mix(a,b,t){ const h = s => [1,3,5].map(i=>parseInt(s.slice(i,i+2),16)); const A=h(a),B=h(b); return "rgb("+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")+")"; }
+function renderSeatStrip(){
+  const box = document.getElementById("seatstrip");
+  if (!path.length){ box.hidden = true; return; }
+  const dp = D.tree.c[path[0]], a = seatInfo(dp);
+  box.hidden = false;
+  box.innerHTML = `<span class="st">Kursi ${dp.n} (${dp.s}):</span>` +
+    a.ord.map(([i,c]) => `<span class="chip${i===PKS?" pks":""}"><i style="background:${PT[i].c}"></i>${PT[i].s} ${c}</span>`).join("") +
+    (a.s[PKS] === 0 ? `<span class="chip pks" style="opacity:.75">PKS 0</span>` : "") +
+    `<span class="st2">PKS perlu +${fmt(a.need)} suara untuk kursi ke-${a.s[PKS]+1}</span>`;
+}
+function renderMap(n){
+  const card = document.getElementById("mapcard");
+  renderSeatStrip();
+  if (!G){ card.style.display = "none"; return; }
+  const svg = document.getElementById("map"), bg = svg.querySelector(".bg"), fg = svg.querySelector(".fg"), lb = svg.querySelector(".lb");
+  bg.innerHTML = fg.innerHTML = lb.innerHTML = "";
+  document.getElementById("tip").hidden = true;
+  const deep = path.length >= 3;
+  const base = deep ? path.slice(0,2) : path.slice();
+  const parent = nodeAt(base);
+  const items = parent.c.map((c,i) => ({c, p: base.concat(i), k: base.concat(i).join("/")}));
+  const focusKey = deep ? path.slice(0,3).join("/") : null;
+  const seatOK = base.length === 0;
+  document.querySelector('#seg_map button[data-mm="seat"]').hidden = !seatOK;
+  const mm = (mapMode === "seat" && !seatOK) ? "win" : mapMode;
+  document.querySelectorAll("#seg_map button").forEach(x => x.classList.toggle("on", x.dataset.mm === mm));
+  for (const k in G.g) if (k.split("/").length === 2) bg.appendChild(el("path", {d: G.g[k].p}));
+  const shares = items.map(x => { const t = sum(x.c.v); return t ? x.c.v[PKS]/t : 0; });
+  const maxS = Math.max(...shares, 0.0001), minS = Math.min(...shares), rngS = Math.max(maxS-minS, 0.0001);
+  let p0 = css("--pks-0"); if (!/^#[0-9a-f]{6}$/i.test(p0)) p0 = "#fdf1e2";
+  const wins = {};
+  items.forEach((x,idx) => {
+    const g = G.g[x.k]; if (!g) return;
+    const w = order(x.c.v)[0][0];
+    wins[w] = (wins[w]||0) + 1;
+    const fill = mm === "seat" ? css("--seatbg") : mm === "win" ? PT[w].c : mix(p0, "#F08A1C", 0.08 + 0.92*Math.min(1, (shares[idx]-minS)/rngS));
+    const p = el("path", {d: g.p, fill});
+    p.dataset.k = x.k;
+    if (mm === "seat") p.classList.add("seatp");
+    if (focusKey) p.classList.add(x.k === focusKey ? "cur" : "dim");
+    p.addEventListener("mousemove", ev => showTip(ev, x.c, mm));
+    p.addEventListener("mouseleave", () => { document.getElementById("tip").hidden = true; });
+    p.addEventListener("click", () => go(x.p));
+    fg.appendChild(p);
+  });
+  if (focusKey){ const c = fg.querySelector(`path[data-k="${focusKey}"]`); if (c) fg.appendChild(c); }
+  const bb = base.length ? G.g[base.join("/")].b : [0,0,G.w,G.h];
+  const w = bb[2]-bb[0], h = bb[3]-bb[1], pad = Math.max(w,h)*0.04;
+  svg.setAttribute("viewBox", `${bb[0]-pad} ${bb[1]-pad} ${w+2*pad} ${h+2*pad}`);
+  const fs = Math.max(w,h) / (items.length > 12 ? 50 : 40);
+  items.forEach(x => { const g = G.g[x.k]; if (!g) return;
+    const nm = x.c.n.replace(/^Dapil Ciamis /,"Dapil ");
+    if (mm === "seat"){
+      const dots = seatDots(x.c), per = 5, r = Math.max(w,h)/72, gap = r*2.45, rows = Math.ceil(dots.length/per);
+      const y0 = g.b[5] - (rows-1)*gap/2 + fs*0.55;
+      const t = el("text", {x: g.b[4], y: y0 - r - fs*0.85, "font-size": fs*1.05, "stroke-width": fs*0.3}); t.textContent = nm; lb.appendChild(t);
+      dots.forEach((pi,j) => { const row = Math.floor(j/per), inRow = Math.min(per, dots.length-row*per), col = j%per;
+        const cx = g.b[4] + (col-(inRow-1)/2)*gap, cy = y0 + row*gap;
+        lb.appendChild(el("circle", {cx, cy, r, fill: PT[pi].c, stroke: pi===PKS ? "#111" : "#fff", "stroke-width": pi===PKS ? r*0.32 : r*0.16})); });
+    } else {
+      const t = el("text", {x: g.b[4], y: g.b[5], "font-size": fs, "stroke-width": fs*0.28}); t.textContent = nm; lb.appendChild(t);
+    }
+  });
+  const lvl = {0:"Dapil", 1:"Kecamatan", 2:"Desa"}[base.length];
+  document.getElementById("t_map").textContent = `Peta per ${lvl} — ${parent.n}`;
+  let sub = mm === "seat" ? `Tiap titik = 1 kursi DPRD yang diraih partai di dapil itu (50 kursi, dihitung dengan metode Sainte-Laguë; sama dengan penetapan KPU). Titik bergaris hitam = kursi PKS.`
+          : mm === "win" ? `Warna = partai dengan suara terbanyak. PKS menang di ${wins[PKS]||0} dari ${items.length} ${lvl.toLowerCase()}.`
+          : `Warna makin pekat = persentase suara PKS makin tinggi.`;
+  if (deep) sub += " Batas wilayah RW tidak tersedia, jadi peta berhenti di tingkat desa; angka per RW ada di grafik dan tabel di bawah.";
+  sub += " Arahkan kursor untuk detail, klik wilayah untuk masuk.";
+  document.getElementById("s_map").textContent = sub;
+  const lg = document.getElementById("legend");
+  if (mm === "seat"){
+    const tot = new Array(PT.length).fill(0); D.tree.c.forEach(dp => seatInfo(dp).s.forEach((c,i) => tot[i]+=c));
+    lg.innerHTML = `<span>Total kursi:</span>` + tot.map((c,i)=>[i,c]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||D.tree.v[b[0]]-D.tree.v[a[0]])
+      .map(([i,c]) => `<span><span class="sw" style="background:${PT[i].c}${i===PKS?";outline:2px solid #111":""}"></span>${PT[i].s} <b>${c}</b></span>`).join("");
+  } else lg.innerHTML = mm === "win"
+    ? Object.entries(wins).sort((a,b)=>b[1]-a[1]).map(([i,c]) => `<span><span class="sw" style="background:${PT[i].c}"></span>${PT[i].s} menang di <b>${c}</b></span>`).join("")
+    : `<span>% suara PKS:</span><span>${pct(minS)}</span><span class="grad"></span><span>${pct(maxS)}</span>`;
+}
+function showTip(ev, c, mm){
+  const tip = document.getElementById("tip"), box = document.getElementById("mapwrap").getBoundingClientRect();
+  const t = sum(c.v), o = order(c.v), r = rankOf(c.v,PKS);
+  if (mm === "seat" && c.s){
+    const a = seatInfo(c);
+    tip.innerHTML = `<b>${c.n} · ${c.s} kursi</b>` + a.ord.map(([i,k]) => `${PT[i].s}: <strong>${k}</strong> kursi <span style="color:var(--mute)">(${fmt(c.v[i])} suara)</span>`).join("<br>") +
+      (a.s[PKS] ? "" : `<br>PKS: <strong>0</strong> kursi <span style="color:var(--mute)">(${fmt(c.v[PKS])} suara)</span>`) +
+      `<br><span style="color:var(--mute)">Kursi terakhir: ${PT[a.last[1]].s}. PKS perlu +${fmt(a.need)} suara untuk kursi ke-${a.s[PKS]+1}.</span>`;
+  } else {
+    tip.innerHTML = `<b>${c.n}</b>` + o.slice(0,3).map(([i,v],k)=>`${k+1}. ${PT[i].s}: ${fmt(v)} (${pct(t?v/t:0)})`).join("<br>") +
+      (r > 3 ? `<br>${r}. PKS: ${fmt(c.v[PKS])} (${pct(t?c.v[PKS]/t:0)})` : "") +
+      `<br><span style="color:var(--mute)">Suara sah ${fmt(t)}</span>`;
+  }
+  tip.hidden = false;
+  let x = ev.clientX - box.left + 14, y = ev.clientY - box.top + 14;
+  if (x + 280 > box.width) x = Math.max(4, ev.clientX - box.left - 290);
+  if (y + tip.offsetHeight > box.height) y = Math.max(4, ev.clientY - box.top - tip.offsetHeight - 10);
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+document.querySelectorAll("#seg_map button").forEach(b => b.onclick = () => { mapMode=b.dataset.mm; renderMap(node()); });
+document.getElementById("q").oninput =e => { q = e.target.value.trim().toLowerCase(); renderTable(node()); };
+window.addEventListener("hashchange", () => { readHash(); q=""; document.getElementById("q").value=""; render(); window.scrollTo({top:0}); });
+readHash(); render();
+</script>
+</body>
+</html>
