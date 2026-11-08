@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Target RW PKS Ciamis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<script src="target-data.js"></script>
+<script src="geo.js"></script>
+<style>
+/* Mengikuti gaya index.html (Dashboard Suara Partai): token sama, font sistem */
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1d2533;--mute:#6b7585;--line:#e3e7ee;--pks:#F08A1C;--pks-soft:#fff3e4;--acc:#1F3864;--chip:#eef1f6;--sea:#eef2f6;--land:#d9dee6;
+  --s0:#fbefe1;--s1:#f8d3a8;--s2:#f3ae63;--s3:#e5822a;--s4:#b85a12;--p1:#c2410c;--p2:#e6a23c;--p3:#a3abb8;--mob:#2f6db5;--per:#7a4fb0;--ok:#2e8b57;--mid:#c08a00;--bad:#c0392b;--onacc:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151c;--card:#1a2029;--ink:#e8ecf2;--mute:#9aa4b2;--line:#2b3340;--pks-soft:#3a2a14;--acc:#8fb0e8;--chip:#252d39;--sea:#141a22;--land:#2c3440;
+  --s0:#3a2a18;--s1:#6b431c;--s2:#9c5e1f;--s3:#d07a26;--s4:#f4a64d;--p1:#f07a3e;--p2:#d9a441;--p3:#6b7380;--mob:#6f9be0;--per:#ad8ae0;--ok:#4cc38a;--mid:#e0b23c;--bad:#e8735f;--onacc:#11151c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11151c;--card:#1a2029;--ink:#e8ecf2;--mute:#9aa4b2;--line:#2b3340;--pks-soft:#3a2a14;--acc:#8fb0e8;--chip:#252d39;--sea:#141a22;--land:#2c3440;
+  --s0:#3a2a18;--s1:#6b431c;--s2:#9c5e1f;--s3:#d07a26;--s4:#f4a64d;--p1:#f07a3e;--p2:#d9a441;--p3:#6b7380;--mob:#6f9be0;--per:#ad8ae0;--ok:#4cc38a;--mid:#e0b23c;--bad:#e8735f;--onacc:#11151c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
+header{background:var(--card);border-bottom:1px solid var(--line);padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.wrap{max-width:1180px;margin:0 auto}
+.hrow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between}
+h1{font-size:18px;margin:0}
+.ver{font-size:12px;color:var(--mute)}
+.ver b{color:var(--pks)}
+.nav a{font-size:13px;color:var(--acc);text-decoration:none}
+.nav a:hover{text-decoration:underline}
+.crumb{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:14px;margin-top:6px}
+.crumb button{border:0;background:none;padding:0;color:var(--acc);cursor:pointer;font:inherit}
+.crumb button:hover{text-decoration:underline}
+.crumb .sep{color:var(--mute)} .crumb .cur{font-weight:600}
+main{padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .l{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.kpi .v{font-size:24px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--mute)}
+.kpi.pks{background:var(--pks-soft);border-color:var(--pks)}
+.lab{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--chip);color:var(--mute);margin-left:4px;vertical-align:middle}
+.grid{display:grid;grid-template-columns:5fr 7fr;gap:14px;margin-bottom:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h2{font-size:15px;margin:0 0 4px}
+.card .sub{font-size:12px;color:var(--mute);margin-bottom:10px}
+.mapwrap{position:relative;width:100%;background:var(--sea);border-radius:8px;overflow:hidden}
+#map{width:100%;height:auto;max-height:520px;display:block}
+#map path.d{stroke:var(--card);cursor:pointer;vector-effect:non-scaling-stroke;stroke-width:.8}
+#map path.d:hover{stroke:var(--ink);stroke-width:2}
+#map path.kc{fill:none;stroke:var(--ink);stroke-opacity:.55;stroke-width:1.4;vector-effect:non-scaling-stroke;pointer-events:none}
+#map path.sel{stroke:var(--ink);stroke-width:2.5}
+#map text{font-weight:700;fill:var(--ink);stroke:var(--card);paint-order:stroke;stroke-linejoin:round;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.legend{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin-top:8px;flex-wrap:wrap}
+.legend .ramp{display:flex;height:10px;border-radius:3px;overflow:hidden;width:160px}
+.legend .ramp span{flex:1}
+.dbox{display:flex;flex-direction:column;gap:6px;font-size:13px;margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+.dbox b{font-size:14px}
+.dapils{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.dp{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg);cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.dp:hover{border-color:var(--acc)}
+.dp .t{display:flex;justify-content:space-between;font-weight:700}
+.dp .k{font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--chip);border-radius:3px;overflow:hidden;margin-top:6px;display:flex}
+.bar i{display:block;height:100%}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--ink);padding:5px 10px;font-size:13px;cursor:pointer;font-family:inherit}
+.seg button.on{background:var(--acc);color:var(--onacc)}
+input[type=search]{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:14px;min-width:0;width:180px;max-width:100%}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--pks);outline-offset:2px}
+.tablewrap{overflow:auto;max-height:640px;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:12px;color:var(--mute);font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--card);z-index:1}
+th.sorted{color:var(--ink)}
+th:first-child,td:first-child,td.l,th.l{text-align:left}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--chip)}
+td.t{font-weight:700;color:var(--pks)}
+.pr{display:inline-block;min-width:26px;text-align:center;font-size:11px;font-weight:700;padding:1px 6px;border-radius:8px;color:var(--onacc)}
+.pr.p1{background:var(--p1)} .pr.p2{background:var(--p2)} .pr.p3{background:var(--p3)}
+.st{font-size:12px;font-weight:600}
+.st.m{color:var(--mob)} .st.p{color:var(--per)}
+.badge{font-size:11px;padding:1px 6px;border-radius:8px;border:1px solid var(--line);color:var(--mute)}
+.badge.a1{border-color:var(--ok);color:var(--ok)} .badge.a2{border-color:var(--mid);color:var(--mid)} .badge.a3{border-color:var(--bad);color:var(--bad)}
+.arrow{color:var(--mute)}
+.mini{display:inline-flex;width:70px;height:6px;background:var(--chip);border-radius:3px;overflow:hidden;vertical-align:middle;margin-left:6px}
+.mini i{display:block;height:100%;background:var(--pks)}
+.note{font-size:12px;color:var(--mute);margin-top:10px}
+.warn{background:var(--pks-soft);border:1px solid var(--pks);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:12px}
+footer{padding-block:4px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));font-size:12px;color:var(--mute)}
+footer p{margin:4px 0;max-width:110ch}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="hrow">
+    <div><h1>Target RW PKS Ciamis</h1><span class="ver" id="ver"></span></div>
+    <span class="nav"><a href="index.html">← Dashboard suara 2024</a></span>
+  </div>
+  <nav class="crumb" id="crumb" aria-label="Tingkat wilayah"></nav>
+</div></header>
+
+<main><div class="wrap">
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Peta tambahan target</h2>
+      <div class="sub" id="mapsub"></div>
+      <div class="mapwrap"><svg id="map" role="img" aria-label="Peta desa"></svg></div>
+      <div class="legend" id="legend"></div>
+      <div class="dbox" id="dbox"></div>
+    </section>
+
+    <section class="card">
+      <h2 id="ttl">Rincian</h2>
+      <div class="sub" id="tsub"></div>
+      <div class="tools">
+        <div class="seg" id="view"><button data-v="w">Per wilayah</button><button data-v="r">Daftar RW</button></div>
+        <div class="seg" id="prio"><button data-v="12">P1+P2</button><button data-v="1">P1</button><button data-v="2">P2</button><button data-v="0">Semua</button></div>
+        <div class="seg" id="strat"><button data-v="0">Semua strategi</button><button data-v="1">Mobilisasi</button><button data-v="2">Persuasi</button></div>
+        <input type="search" id="q" placeholder="Cari desa/kecamatan" aria-label="Cari">
+      </div>
+      <div class="tablewrap"><table id="tbl"></table></div>
+      <div class="note" id="tnote"></div>
+    </section>
+  </div>
+</div></main>
+
+<footer><div class="wrap">
+  <p><b>Sumber:</b> Target_RW_PKS_Ciamis versi <span id="fver"></span>. Suara 2024 per RW = perkiraan (suara TPS dibagi sebanding DPT RW); total desa ke atas sama dengan D.HASIL. Tambahan target per RW = kekurangan dapil dibagi ke RW P1+P2 sebanding potensinya (asumsi M = 30%, Pp = 50%). RW P3 tidak diberi tambahan. Jumlah suara di tabel RW bisa sedikit di bawah angka dapil karena TPS khusus tidak masuk RW.</p>
+  <p><b>Prioritas:</b> P1 = RW dengan yield tertinggi yang menyimpan 50% potensi dapil; P2 = sampai 80%; P3 = sisanya. <b>Strategi:</b> Mobilisasi = membawa simpatisan yang tidak datang ke TPS; Persuasi = mengajak pemilih partai lain. <b>Keandalan</b> angka RW: Rendah berarti RW berbagi TPS dengan RW lain.</p>
+  <p>Hanya angka agregat per wilayah; tidak memuat nama pemilih. Batas desa: Kemendagri 2023. Batas RW tidak tersedia, jadi peta berhenti di desa.</p>
+</div></footer>
+
+<script>
+(function(){
+const T=window.TARGET_DATA,G=window.PILEG_GEO.g,NM=T.names;
+const C={};T.cols.forEach((c,i)=>C[c]=i);
+const R=T.rw.map(a=>({g:a[C.g],rw:a[C.rw],dpt:a[C.dpt],sah:a[C.sah],pks:a[C.pks],non:a[C.nonpem],pr:a[C.prio],st:a[C.strat],tb:a[C.tamb],riv:a[C.riv],an:a[C.andal]}));
+R.forEach(r=>{const p=r.g.split('/');r.d=+p[0];r.k=p[0]+'/'+p[1];});
+const DAP={};T.dapil.forEach(d=>DAP[d.d-1]=d);
+const SEATS={0:10,1:7,2:9,3:8,4:8,5:8};
+const fmt=n=>Math.round(n).toLocaleString('id-ID');
+const pc=(x,d=1)=>isFinite(x)?(x*100).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d})+'%':'–';
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+let S={path:[],view:'w',prio:'12',strat:'0',q:'',sort:null,dir:-1};
+try{const s=JSON.parse(localStorage.getItem('target-rw')||'{}');if(s.prio)S.prio=s.prio;if(s.strat)S.strat=s.strat;}catch(e){}
+function readHash(){const h=(location.hash||'').replace(/^#\/?/,'');if(!h)return;const p=h.split('/').filter(x=>x!=='').map(Number);if(p.every(n=>Number.isInteger(n)&&n>=0))S.path=p.slice(0,3);}
+try{readHash();}catch(e){}
+function setHash(){try{history.replaceState(null,'','#/'+S.path.join('/'));}catch(e){}}
+
+const key=()=>S.path.join('/');
+const inScope=r=>{const k=key();return !k||r.g===k||r.g.startsWith(k+'/');};
+const pass=r=>(S.prio==='0'||(S.prio==='12'?r.pr<=2:r.pr===+S.prio))&&(S.strat==='0'||r.st===+S.strat);
+function agg(rs){const a={rw:rs.length,p1:0,p2:0,dpt:0,sah:0,pks:0,tb:0,non:0};rs.forEach(r=>{a.p1+=r.pr===1;a.p2+=r.pr===2;a.dpt+=r.dpt;a.sah+=r.sah;a.pks+=r.pks;a.tb+=r.tb;a.non+=r.non;});return a;}
+function nm(k){return k===''?'Kabupaten Ciamis':(k.split('/').length===1?'Dapil '+(+k+1):NM[k]);}
+
+function crumb(){const parts=[['','Kabupaten']];for(let i=1;i<=S.path.length;i++){const k=S.path.slice(0,i).join('/');parts.push([k,nm(k)]);}
+  $('crumb').innerHTML=parts.map((p,i)=>i===parts.length-1?`<span class="cur">${p[1]}</span>`:`<button data-k="${p[0]}">${p[1]}</button><span class="sep">›</span>`).join('');
+  $('crumb').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.k===''?[]:b.dataset.k.split('/').map(Number)));}
+
+function kpis(){const rs=R.filter(inScope),a=agg(rs),lv=S.path.length;
+  let tg,v24,def,kur='';
+  if(lv===0){v24=T.dapil.reduce((s,d)=>s+d.v24,0);tg=T.dapil.reduce((s,d)=>s+d.tg,0);def=tg-v24;
+    const k0=T.dapil.reduce((s,d)=>s+(+d.kursi.split('→')[0]),0),k1=T.dapil.reduce((s,d)=>s+(+d.kursi.split('→')[1]),0);kur=`<div class="kpi pks"><div class="l">Kursi PKS</div><div class="v">${k0} → ${k1}</div><div class="s">dari 50 kursi</div></div>`;}
+  else if(lv===1){const d=DAP[S.path[0]];v24=d.v24;tg=d.tg;def=d.def_;kur=`<div class="kpi pks"><div class="l">Kursi PKS</div><div class="v">${d.kursi}</div><div class="s">dari ${SEATS[S.path[0]]} kursi · pesaing ${d.riv}</div></div>`;}
+  else {v24=a.pks;tg=a.pks+a.tb;def=a.tb;}
+  $('kpis').innerHTML=kur+
+   `<div class="kpi"><div class="l">Suara PKS 2024</div><div class="v">${fmt(v24)}</div><div class="s">${pc(a.pks/a.sah)} suara sah<span class="lab">${lv>=2?'perkiraan':'data'}</span></div></div>
+    <div class="kpi pks"><div class="l">Target suara</div><div class="v">${fmt(tg)}</div><div class="s">+${fmt(def)} (+${pc(def/v24,0)})<span class="lab">target</span></div></div>
+    <div class="kpi"><div class="l">RW P1 · P2</div><div class="v">${fmt(a.p1)} · ${fmt(a.p2)}</div><div class="s">dari ${fmt(a.rw)} RW</div></div>
+    <div class="kpi"><div class="l">DPT di RW P1+P2</div><div class="v">${fmt(rs.filter(r=>r.pr<=2).reduce((s,r)=>s+r.dpt,0))}</div><div class="s">${pc(rs.filter(r=>r.pr<=2).reduce((s,r)=>s+r.dpt,0)/a.dpt,0)} DPT wilayah ini</div></div>`;}
+
+function ramp(t){const st=['--s0','--s1','--s2','--s3','--s4'].map(css);const x=Math.max(0,Math.min(.9999,t))*4,i=Math.floor(x),f=x-i;return mix(st[i],st[Math.min(4,i+1)],f);}
+function hx(c){c=c.replace('#','');return[0,2,4].map(i=>parseInt(c.slice(i,i+2),16));}
+function mix(a,b,t){const A=hx(a),B=hx(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');}
+
+function map(){const lv=S.path.length;
+  // unit peta: kabupaten → dapil, dapil → kecamatan, kecamatan/desa → desa
+  const unit=lv===0?1:lv===1?2:3, base=lv===0?'':lv===1?String(S.path[0]):S.path.slice(0,2).join('/');
+  const uk=r=>r.g.split('/').slice(0,unit).join('/');
+  const grp={};R.forEach(r=>{if(base&&!r.g.startsWith(base+'/'))return;const k=uk(r);(grp[k]=grp[k]||[]).push(r);});
+  const ks=Object.keys(grp).filter(k=>G[k]);const b=[1e9,1e9,-1e9,-1e9];
+  ks.forEach(k=>{const g=G[k].b;b[0]=Math.min(b[0],g[0]);b[1]=Math.min(b[1],g[1]);b[2]=Math.max(b[2],g[2]);b[3]=Math.max(b[3],g[3]);});
+  const span=Math.max(b[2]-b[0],b[3]-b[1]),pad=span*.03;
+  $('map').setAttribute('viewBox',`${b[0]-pad} ${b[1]-pad} ${b[2]-b[0]+2*pad} ${b[3]-b[1]+2*pad}`);
+  const val={};ks.forEach(k=>val[k]=grp[k].reduce((s,r)=>s+r.tb,0));
+  const mx=Math.max(1,...Object.values(val));
+  const used={},code=k=>{const s=NM[k].toUpperCase().replace(/[^A-Z]/g,'');let c=[s.slice(0,4),s.slice(0,3)+s.slice(-1),s.slice(0,2)+s.slice(-2)].find(x=>!used[x])||s.slice(0,3)+'2';used[c]=1;return c;};
+  const lab=k=>unit===1?'Dapil '+(+k+1):unit===2?NM[k].toUpperCase():code(k);
+  const fs=span/(unit===1?28:unit===2?36:46);
+  let h=ks.map(k=>`<path class="d ${lv===3&&k===key()?'sel':''}" data-k="${k}" tabindex="0" d="${G[k].p}" style="fill:${val[k]>0?ramp(Math.sqrt(val[k]/mx)):css('--land')}"><title>${nm(k)} · +${fmt(val[k])} suara target</title></path>`).join('');
+  if(base&&G[base])h+=`<path class="kc" d="${G[base].p}"/>`;
+  h+=ks.map(k=>{const g=G[k].b;return `<text x="${g[4]}" y="${g[5]-(unit<3?fs*.45:0)}" font-size="${fs}" stroke-width="${fs/4}">${lab(k)}</text>`+(unit<3?`<text x="${g[4]}" y="${g[5]+fs*.75}" font-size="${fs*.8}" stroke-width="${fs/4}" style="font-weight:600">+${fmt(val[k])}</text>`:'');}).join('');
+  $('map').innerHTML=h;
+  $('map').querySelectorAll('path.d').forEach(p=>{const f=()=>go(p.dataset.k.split('/').map(Number));p.onclick=f;p.onkeydown=e=>{if(e.key==='Enter')f();};});
+  const unitName=['','dapil','kecamatan','desa'][unit];
+  $('mapsub').textContent=`Warna = tambahan suara yang ditargetkan per ${unitName}.`+(lv<3?` Ketuk ${unitName} untuk masuk.`:' Desa terpilih bergaris tebal.');
+  $('legend').innerHTML=`<span>0</span><span class="ramp">${[.1,.3,.5,.7,.95].map(t=>`<span style="background:${ramp(t)}"></span>`).join('')}</span><span>+${fmt(mx)} suara per ${unitName}</span><span class="lab">target</span>`;
+  // dapil summary or selected desa box
+  if(lv===0){$('dbox').innerHTML=`<b>Enam dapil</b><div class="dapils">${T.dapil.map(d=>{const prog=d.v24/d.tg;return `<button class="dp" data-d="${d.d-1}"><span class="t"><span>Dapil ${d.d}</span><span>${d.kursi}</span></span><span class="k">${fmt(d.v24)} → ${fmt(d.tg)} · +${fmt(d.def_)}</span><span class="bar"><i style="width:${prog*100}%;background:var(--pks)"></i></span></button>`;}).join('')}</div>`;
+    $('dbox').querySelectorAll('.dp').forEach(b=>b.onclick=()=>go([+b.dataset.d]));}
+  else if(lv===1){const d=DAP[S.path[0]];$('dbox').innerHTML=`<b>Dapil ${d.d}: ${d.kursi} kursi</b><span>Pesaing kursi: <b>${d.riv}</b>${d.amb?` · ambang kursi target ±${fmt(d.amb)} suara`:''}</span><span>Kenaikan suara PKS yang dibutuhkan di RW P1+P2: <b>+${pc(d.naik,0)}</b></span>`;}
+  else $('dbox').innerHTML='';}
+
+function rows(){return R.filter(r=>inScope(r)&&pass(r));}
+function table(){const lv=S.path.length;const view=lv===3?'r':S.view;
+  $('view').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.v===view);b.disabled=lv===3&&b.dataset.v==='w';});
+  ['prio','strat'].forEach(id=>$(id).querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===S[id])));
+  let rs=rows();const q=S.q.trim().toLowerCase();
+  if(q)rs=rs.filter(r=>(NM[r.g]+' '+NM[r.k]).toLowerCase().includes(q));
+  const filt=(S.prio!=='0'?['P1+P2','P1','P2'][['12','1','2'].indexOf(S.prio)]:'semua prioritas')+(S.strat!=='0'?', '+(S.strat==='1'?'Mobilisasi':'Persuasi'):'');
+  if(view==='w'){
+    const childKey=r=>lv===0?String(r.d):lv===1?r.k:r.g;
+    const grp={};rs.forEach(r=>{(grp[childKey(r)]=grp[childKey(r)]||[]).push(r);});
+    const all={};R.filter(inScope).forEach(r=>{(all[childKey(r)]=all[childKey(r)]||[]).push(r);});
+    let list=Object.keys(all).map(k=>{const a=agg(all[k]),f=agg(grp[k]||[]);return{k,n:nm(k),a,f};});
+    if(q)list=list.filter(x=>x.f.rw>0);
+    const cols=[['n','Wilayah',x=>x.n],['rw','RW',x=>x.a.rw],['p1','P1',x=>x.a.p1],['p2','P2',x=>x.a.p2],['pks','Suara PKS 2024',x=>x.a.pks],['pct','%PKS',x=>x.a.pks/x.a.sah],['tb','+Target',x=>x.f.tb],['tg','Target',x=>x.a.pks+x.f.tb],['pt','%PKS target',x=>(x.a.pks+x.f.tb)/x.a.sah],['nk','Kenaikan',x=>x.f.tb/x.a.pks]];
+    sortBy(list,cols,'tb');
+    const mx=Math.max(1,...list.map(x=>x.f.tb));
+    $('ttl').textContent=lv===0?'Per dapil':lv===1?'Per kecamatan':'Per desa';
+    $('tsub').textContent='+Target dihitung dari RW yang lolos filter ('+filt+'). Ketuk baris untuk masuk.';
+    $('tbl').innerHTML=head(cols)+'<tbody>'+list.map(x=>`<tr class="click" data-k="${x.k}"><td>${x.n}</td><td>${fmt(x.a.rw)}</td><td>${x.a.p1}</td><td>${x.a.p2}</td><td>${fmt(x.a.pks)}</td><td>${pc(x.a.pks/x.a.sah)}</td><td class="t">+${fmt(x.f.tb)}<span class="mini"><i style="width:${x.f.tb/mx*100}%"></i></span></td><td>${fmt(x.a.pks+x.f.tb)}</td><td>${pc((x.a.pks+x.f.tb)/x.a.sah)}</td><td>${x.a.pks?'+'+pc(x.f.tb/x.a.pks,0):'–'}</td></tr>`).join('')+
+      `</tbody><tfoot><tr><td><b>Total</b></td><td>${fmt(list.reduce((s,x)=>s+x.a.rw,0))}</td><td>${list.reduce((s,x)=>s+x.a.p1,0)}</td><td>${list.reduce((s,x)=>s+x.a.p2,0)}</td><td>${fmt(list.reduce((s,x)=>s+x.a.pks,0))}</td><td></td><td class="t">+${fmt(list.reduce((s,x)=>s+x.f.tb,0))}</td><td></td><td></td><td></td></tr></tfoot>`;
+    $('tbl').querySelectorAll('tr.click').forEach(tr=>tr.onclick=()=>go(tr.dataset.k.split('/').map(Number)));
+    bindSort(cols);$('tnote').textContent='';
+  } else {
+    const cols=[['n','Desa · RW',r=>NM[r.g]+' '+r.rw],['dpt','DPT',r=>r.dpt],['pks','PKS 2024',r=>r.pks],['pct','%PKS',r=>r.pks/r.sah],['pr','Prioritas',r=>r.pr],['st','Strategi',r=>r.st],['tb','+Target',r=>r.tb],['tg','Target',r=>r.pks+r.tb],['pt','%PKS target',r=>(r.pks+r.tb)/r.sah],['riv','Suara pesaing',r=>r.riv],['an','Keandalan',r=>r.an]];
+    sortBy(rs,cols,'tb');const lim=400,show=rs.slice(0,lim);
+    $('ttl').textContent=lv===3?'RW di desa '+NM[key()]:'Daftar RW';
+    $('tsub').textContent=`${fmt(rs.length)} RW (${filt}). Urut +Target terbesar. Suara pesaing = suara partai pesaing kursi dapil.`;
+    $('tbl').innerHTML=head(cols)+'<tbody>'+show.map(r=>`<tr><td>${lv===3?'':NM[r.g]+' · '}<b>RW ${r.rw}</b>${lv<2?` <span class="ver">${NM[r.k]}</span>`:''}</td><td>${fmt(r.dpt)}</td><td>${fmt(r.pks)}</td><td>${pc(r.pks/r.sah)}</td><td><span class="pr p${r.pr}">P${r.pr}</span></td><td class="l"><span class="st ${r.st===1?'m':'p'}">${r.st===1?'Mobilisasi':'Persuasi'}</span></td><td class="t">${r.tb>0?'+'+fmt(r.tb):'–'}</td><td>${fmt(r.pks+r.tb)}</td><td>${pc((r.pks+r.tb)/r.sah)}</td><td>${fmt(r.riv)}</td><td><span class="badge a${r.an}">${['','Tinggi','Sedang','Rendah'][r.an]||'–'}</span></td></tr>`).join('')+'</tbody>';
+    bindSort(cols);$('tnote').textContent=rs.length>lim?`Menampilkan ${lim} dari ${fmt(rs.length)} RW. Masuk ke kecamatan atau desa, atau pakai filter, untuk melihat sisanya.`:'';
+  }}
+function head(cols){return '<thead><tr>'+cols.map(c=>`<th data-s="${c[0]}" class="${S.sort===c[0]?'sorted':''} ${c[0]==='st'?'l':''}">${c[1]}${S.sort===c[0]?(S.dir<0?' ↓':' ↑'):''}</th>`).join('')+'</tr></thead>';}
+function sortBy(list,cols,def){const s=S.sort&&cols.find(c=>c[0]===S.sort)?S.sort:def;const f=cols.find(c=>c[0]===s)[2];const d=S.sort?S.dir:-1;list.sort((a,b)=>{const x=f(a),y=f(b);return typeof x==='string'?d*x.localeCompare(y):d*((x||0)-(y||0));});}
+function bindSort(cols){$('tbl').querySelectorAll('th').forEach(th=>th.onclick=()=>{const s=th.dataset.s;if(S.sort===s)S.dir=-S.dir;else{S.sort=s;S.dir=s==='n'?1:-1;}table();});}
+
+function go(p){S.path=p;S.sort=null;S.q='';$('q').value='';setHash();render();window.scrollTo({top:0,behavior:'smooth'});}
+function render(){$('ver').innerHTML=`Versi <b>${T.ver}</b> · update ${T.upd}`;$('fver').textContent=T.ver+' ('+T.upd+')';crumb();kpis();map();table();}
+$('view').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;S.view=b.dataset.v;S.sort=null;table();};
+['prio','strat'].forEach(id=>$(id).onclick=e=>{const b=e.target.closest('button');if(!b)return;S[id]=b.dataset.v;try{localStorage.setItem('target-rw',JSON.stringify({prio:S.prio,strat:S.strat}))}catch(x){};table();});
+$('q').oninput=e=>{S.q=e.target.value;table();};
+window.addEventListener('hashchange',()=>{try{readHash();render();}catch(e){}});
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',map);}catch(e){}
+render();
+})();
+</script>
+</body>
+</html>
